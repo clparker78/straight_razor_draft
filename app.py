@@ -14,7 +14,7 @@ def make_styled_html_table_with_hover(df, title):
     tan = "#C1A875"
     green = "#003F2D"
     black = "#1A1A1A"
-    hover_bg = "#f5f5f5"  # Light grey hover background
+    hover_bg = "#F2E6D0"  # Soft version of tan for hover
 
     html = f"""
     <h3 style='color:{black}; text-align:center; font-family:sans-serif;'>{title}</h3>
@@ -245,7 +245,12 @@ def create_race_image(participants, width=600, height=200):
 # Add score next to image
         draw = ImageDraw.Draw(field_bg)
         score_text = f"{p['score']} pts"
-        draw.text((x_pos + 45, y_pos + 10), score_text, fill="white")
+        from PIL import ImageFont
+
+        font = ImageFont.load_default()
+
+        draw.text((x_pos + 50, y_pos + 10), f"{int(p['score'])}", fill="white", font=font)
+
 
     return field_bg
 
@@ -300,6 +305,7 @@ if leaderboard:
 
 if leaderboard:
     leaderboard_df = pd.DataFrame(leaderboard)
+    leaderboard_df["score"] = leaderboard_df["score"].astype(int)
     st.markdown(make_styled_html_table_with_hover(leaderboard_df, "🏆 The Straight Razor Draft Leaderboard"), unsafe_allow_html=True)
 else:
     st.info("Waiting for picks and entries...")
@@ -344,6 +350,11 @@ if current_pick_count > st.session_state.last_pick_count:
 
 
 # ---------- Draft Picks Table ----------
+
+# Sort draft results by Pick column
+draft_df = draft_df.sort_values(by="Pick")
+
+draft_df["Pick"] = draft_df["Pick"].astype(int)
 
 if not draft_df.empty:
     display_df = draft_df[['Pick', 'Player', 'Team']]
