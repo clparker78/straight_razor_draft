@@ -8,6 +8,30 @@ import os
 
 st.set_page_config(page_title="Straight Razor Draft 2025", layout="wide")
 
+# ---------- Table Format Information ----------
+
+def make_styled_html_table_with_hover(df, title):
+    tan = "#C1A875"
+    green = "#003F2D"
+    black = "#1A1A1A"
+    hover_bg = "#f5f5f5"  # Light grey hover background
+
+    html = f"""
+    <h3 style='color:{black}; text-align:center; font-family:sans-serif;'>{title}</h3>
+    <table style='width:100%; border-collapse:collapse; font-family:sans-serif;'>
+        <thead style='background-color:{green}; color:white;'>
+            <tr>{"".join([f"<th style='text-align:center; padding:10px; border:1px solid {black};'>{col}</th>" for col in df.columns])}</tr>
+        </thead>
+        <tbody>
+    """
+    for _, row in df.iterrows():
+        html += f"<tr style='background-color:white;' onmouseover=\"this.style.backgroundColor='{hover_bg}'\" onmouseout=\"this.style.backgroundColor='white'\">"
+        html += "".join([f"<td style='text-align:center; padding:8px; border:1px solid {tan}; color:{black}; transition: all 0.3s;'>{cell}</td>" for cell in row])
+        html += "</tr>"
+    html += "</tbody></table><br>"
+    return html
+
+
 # ---------- Load Data ----------
 sheet_url = "https://docs.google.com/spreadsheets/d/1UZkdBJlZ0T4Wd0TM9q6U5HBfyeQOH7ORE8y7QZOI4PQ/export?format=csv"
 
@@ -273,11 +297,13 @@ if leaderboard:
 
 
 # ------------  Full leaderboard ------------
-st.subheader("🏆 The Straight Razor Draft Leaderboard")
+
 if leaderboard:
-    st.dataframe(pd.DataFrame(leaderboard))
+    leaderboard_df = pd.DataFrame(leaderboard)
+    st.markdown(make_styled_html_table_with_hover(leaderboard_df, "🏆 The Straight Razor Draft Leaderboard"), unsafe_allow_html=True)
 else:
     st.info("Waiting for picks and entries...")
+
 
 
 # ---------- Goalpost Animation ----------
@@ -318,16 +344,13 @@ if current_pick_count > st.session_state.last_pick_count:
 
 
 # ---------- Draft Picks Table ----------
-st.subheader("📋 First Round NFL Draft Picks")
 
 if not draft_df.empty:
-    st.dataframe(
-        draft_df[['Pick', 'Player', 'Team']],
-        use_container_width=True,
-        hide_index=True
-    )
+    display_df = draft_df[['Pick', 'Player', 'Team']]
+    st.markdown(make_styled_html_table_with_hover(display_df, "📋 First Round Draft Picks"), unsafe_allow_html=True)
 else:
     st.info("No picks have been entered yet.")
+
 
 
 # ---------- Footer / Signature (Optional) ----------
