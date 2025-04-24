@@ -232,7 +232,10 @@ race_image = create_race_image(top_runners, 600, 200)
 st.image(race_image, use_container_width=True)
 
 
-# ---------- AI Commentary ----------
+# ---------- AI Commentary ------------
+
+if 'prev_leaderboard' not in st.session_state:
+    st.session_state.prev_leaderboard = leaderboard.copy() if leaderboard else []
 
 def get_commentary(old_board, new_board):
     comments = []
@@ -267,7 +270,9 @@ if leaderboard:
         st.write(line)
     st.session_state.prev_leaderboard = leaderboard.copy()
 
-# Full leaderboard
+
+
+# ------------  Full leaderboard ------------
 st.subheader("🏆 The Straight Razor Draft Leaderboard")
 if leaderboard:
     st.dataframe(pd.DataFrame(leaderboard))
