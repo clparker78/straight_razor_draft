@@ -231,6 +231,7 @@ top_runners = leaderboard[:5] if leaderboard else []
 race_image = create_race_image(top_runners, 600, 200)
 st.image(race_image, use_container_width=True)
 
+
 # ---------- AI Commentary ----------
 
 def get_commentary(old_board, new_board):
